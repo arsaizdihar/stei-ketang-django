@@ -95,8 +95,6 @@ DATABASES = {
             "PASSWORD": os.environ.get("DB_PASSWORD"),
             "HOST": "localhost",
             "PORT": "3306",
-            "CHARSET": "utf8",
-            "COLLATION": "utf8_general_ci",
         },
         "OPTIONS": {"charset": "utf8mb4"},
     }
