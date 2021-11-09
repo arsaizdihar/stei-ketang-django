@@ -12,5 +12,6 @@ urlpatterns = [
     path("login/", TokenObtainPairView.as_view(), name="login"),
     path("refresh/", TokenRefreshView.as_view(), name="register"),
     path("me/", MeView.as_view(), name="me"),
-    path("vote/", VoteView.as_view(), name="vote")
+    path("vote/", VoteView.as_view(), name="vote"),
+    path("setpassword/", SetPasswordView.as_view(), name="set-password")
 ] + router.urls

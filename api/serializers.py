@@ -1,4 +1,6 @@
+from django.core.signing import BadSignature, Signer
 from rest_framework import serializers
+from users.models import ChangePasswordKey
 
 from .models import Candidate, User, Vote
 
@@ -35,6 +37,35 @@ class CandidateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Candidate
         fields = ("number", "photo", "name", "bio")
+
+
+class SetPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(min_length=8, style={'input_type': 'password'}, trim_whitespace=False)
+    password2 = serializers.CharField(min_length=8, style={'input_type': 'password'}, trim_whitespace=False)
+    code = serializers.CharField()
+
+
+    def validate(self, attrs):
+        errs = {}
+        if attrs["password"] != attrs["password2"]:
+            errs["password"] = "Two passwords must be same."
+        code = attrs["code"]
+        signer = Signer()
+        try:
+            data = signer.unsign(code)
+            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data)
+            if key.used:
+                errs["code"] = "Password already set."
+            elif not errs:
+                user = key.user
+                user.set_password(attrs["password"])
+                key.used = True
+                key.save()
+        except (BadSignature, ChangePasswordKey.DoesNotExist):
+            errs["code"] = "Code invalid."
+        if errs:
+            raise serializers.ValidationError(errs)
+        return super().validate(attrs)
 
 
 

@@ -3,7 +3,6 @@ import string
 from typing import Any, Optional
 
 import pandas as pd
-from django.core.exceptions import ValidationError
 from django.core.management.base import BaseCommand, CommandParser
 from users.models import User
 

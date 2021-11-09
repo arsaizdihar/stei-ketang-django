@@ -6,7 +6,8 @@ from rest_framework.response import Response
 
 from api.models import Candidate, Vote
 from api.serializers import (CandidateListSerializer, CandidateSerializer,
-                             UserSerializer, VoteSerializer)
+                             SetPasswordSerializer, UserSerializer,
+                             VoteSerializer)
 
 
 class MeView(generics.RetrieveAPIView):
@@ -35,4 +36,13 @@ class VoteView(views.APIView):
         to_vote = get_object_or_404(Candidate, number=request.data.get("number"))
         vote = Vote.objects.create(candidate=to_vote, user=request.user)
         return Response({"status": "success", "vote": VoteSerializer(vote).data})
+
+class SetPasswordView(views.APIView):
+    serializer_class = SetPasswordSerializer
+
+    def post(self, request: Request, format=None):
+        serializer = SetPasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response({"success": True})
+        return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
