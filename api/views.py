@@ -1,8 +1,10 @@
 
+from django.core.signing import BadSignature, Signer
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, views, viewsets
 from rest_framework.request import Request
 from rest_framework.response import Response
+from users.models import ChangePasswordKey
 
 from api.models import Candidate, Vote
 from api.serializers import (CandidateListSerializer, CandidateSerializer,
@@ -46,3 +48,16 @@ class SetPasswordView(views.APIView):
             return Response({"success": True})
         return Response({"errors": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class CheckPasswordCodeView(views.APIView):
+    def post(self, request: Request, format=None):
+        signer = Signer()
+        try:
+            code = request.data.get("code")
+            data = signer.unsign(code)
+            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data)
+            if key.used:
+                return Response({"error": "Password already set."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"valid": True})
+        except (BadSignature, ChangePasswordKey.DoesNotExist):
+            return Response({"error": "Invalid URL."})
