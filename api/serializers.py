@@ -59,6 +59,7 @@ class SetPasswordSerializer(serializers.Serializer):
             elif not errs:
                 user = key.user
                 user.set_password(attrs["password"])
+                user.save()
                 key.used = True
                 key.save()
         except (BadSignature, ChangePasswordKey.DoesNotExist):
