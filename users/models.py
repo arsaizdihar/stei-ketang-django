@@ -41,3 +41,7 @@ class User(AbstractUser):
     class Meta:
         verbose_name = _("user")
         verbose_name_plural = _("users")
+
+class ChangePasswordKey(models.Model):
+    used = models.BooleanField(default=False)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_query_name="change")

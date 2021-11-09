@@ -11,6 +11,8 @@ media
 # Backup files # 
 *.bak 
 
+# custom
+documents/
 
 # If you are using PyCharm # 
 .idea/**/workspace.xml 
