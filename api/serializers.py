@@ -8,10 +8,17 @@ from .models import Candidate, User, Vote
 class VoteSerializer(serializers.ModelSerializer):
     number = serializers.IntegerField(source="candidate.number", read_only=True)
     name = serializers.CharField(source="candidate.name", read_only=True)
+    photo = serializers.SerializerMethodField()
     time = serializers.DateTimeField(source="created_at")
+
+    def get_photo(self, obj):
+        if obj.candidate.photo is None:
+            return None
+        request = self.context.get('request')
+        return request.build_absolute_uri(obj.candidate.photo.url)
     class Meta:
         model = Vote
-        fields = ("id", "number", "name", "time")
+        fields = ("id", "number", "name", "time", "photo")
 
 class UserSerializer(serializers.ModelSerializer):
     vote = VoteSerializer()
@@ -24,7 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.vote is None:
             return None
         return {"number": obj.vote.candidate.number, "name": obj.vote.candidate.name, "time": obj.vote.created_at}
-
 
 class CandidateListSerializer(serializers.ModelSerializer):
 
