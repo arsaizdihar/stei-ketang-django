@@ -20,6 +20,7 @@ class MeView(generics.RetrieveAPIView):
         return self.request.user
 
 class CandidateViewSet(viewsets.ReadOnlyModelViewSet):
+    lookup_field = "number"
     permission_classes = (permissions.IsAuthenticated, )
     queryset = Candidate.objects
 
