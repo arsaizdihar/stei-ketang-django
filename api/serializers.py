@@ -68,7 +68,7 @@ class SetPasswordSerializer(serializers.Serializer):
                 user.save()
                 key.used = True
                 key.save()
-        except (BadSignature, ChangePasswordKey.DoesNotExist):
+        except (BadSignature, ChangePasswordKey.DoesNotExist, TypeError):
             errs["code"] = "Code invalid."
         if errs:
             raise serializers.ValidationError(errs)
