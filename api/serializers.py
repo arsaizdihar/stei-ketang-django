@@ -48,7 +48,7 @@ class CandidateSerializer(serializers.ModelSerializer):
 class SetPasswordSerializer(serializers.Serializer):
     password = serializers.CharField(min_length=8, style={'input_type': 'password'}, trim_whitespace=False)
     password2 = serializers.CharField(min_length=8, style={'input_type': 'password'}, trim_whitespace=False)
-    code = serializers.CharField()
+    code = serializers.CharField(required=True)
 
 
     def validate(self, attrs):
