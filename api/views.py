@@ -61,4 +61,4 @@ class CheckPasswordCodeView(views.APIView):
                 return Response({"error": "Password already set."}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"valid": True})
         except (BadSignature, ChangePasswordKey.DoesNotExist):
-            return Response({"error": "Invalid URL."})
+            return Response({"error": "Invalid URL."}, status=status.HTTP_400_BAD_REQUEST)
