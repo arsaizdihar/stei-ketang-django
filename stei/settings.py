@@ -64,8 +64,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'stei.urls'
-CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOW_ALL_ORIGINS = os.environ.get("ALLOW_ALL_ORIGINS", "True").lower() in ("true", "t", "1")
+CORS_ALLOWED_ORIGINS = [
+    os.environ.get("ORIGIN", "http://localhost:3000")
+]
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

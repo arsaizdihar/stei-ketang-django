@@ -2,7 +2,7 @@ from django.core.signing import BadSignature, Signer
 from rest_framework import serializers
 from users.models import ChangePasswordKey
 
-from .models import Candidate, User, Vote
+from .models import Candidate, Detail, User, Vote
 
 
 class VoteSerializer(serializers.ModelSerializer):
@@ -38,11 +38,25 @@ class CandidateListSerializer(serializers.ModelSerializer):
         model = Candidate
         fields = ("number", "photo", "name")
 
+class DetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Detail
+        fields = ("number", "text")
+
 class CandidateSerializer(serializers.ModelSerializer):
+    detail = serializers.SerializerMethodField()
+
+
+    def get_detail(self, obj):
+        visi = DetailSerializer(obj.visi_query, many=True)
+        misi = DetailSerializer(obj.misi_query, many=True)
+        program = DetailSerializer(obj.program_query, many=True)
+
+        return {"visi": visi.data, "misi": misi.data, "program": program.data}
     
     class Meta:
         model = Candidate
-        fields = ("number", "photo", "name", "bio")
+        exclude = ("id",)
 
 
 class SetPasswordSerializer(serializers.Serializer):
@@ -58,8 +72,8 @@ class SetPasswordSerializer(serializers.Serializer):
         code = attrs["code"]
         signer = Signer()
         try:
-            data = signer.unsign(code or "")
-            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data)
+            data = signer.unsign_object(code or "")
+            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data.get("id"))
             if key.used:
                 errs["code"] = "Password already set."
             elif not errs:
