@@ -38,7 +38,7 @@ class VoteView(views.APIView):
             return Response({"error": "Already voted"}, status=status.HTTP_400_BAD_REQUEST)
         to_vote = get_object_or_404(Candidate, number=request.data.get("number"))
         vote = Vote.objects.create(candidate=to_vote, user=request.user)
-        return Response({"status": "success", "vote": VoteSerializer(vote).data})
+        return Response({"status": "success", "vote": VoteSerializer(vote, context={'request': request}).data})
 
 class SetPasswordView(views.APIView):
     serializer_class = SetPasswordSerializer
