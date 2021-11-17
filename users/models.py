@@ -44,4 +44,4 @@ class User(AbstractUser):
 
 class ChangePasswordKey(models.Model):
     used = models.BooleanField(default=False)
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_query_name="change")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="change")
