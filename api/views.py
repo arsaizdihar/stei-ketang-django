@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.core.signing import BadSignature, Signer
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions, status, views, viewsets
@@ -34,6 +35,8 @@ class VoteView(views.APIView):
     permission_classes = (permissions.IsAuthenticated, )
 
     def post(self, request: Request, format=None):
+        if not settings.ENABLE_VOTE:
+            return Response({"error": "voting is currently disabled"}, status=status.HTTP_400_BAD_REQUEST)
         if hasattr(self.request.user, "vote"):
             return Response({"error": "Already voted"}, status=status.HTTP_400_BAD_REQUEST)
         to_vote = get_object_or_404(Candidate, number=request.data.get("number"))

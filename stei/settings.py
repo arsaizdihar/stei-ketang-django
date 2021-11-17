@@ -174,3 +174,5 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "ROTATE_REFRESH_TOKENS": True,
 }
+
+ENABLE_VOTE = os.environ.get("ENABLE_VOTE", "True").lower() in ("true", "t", "1")
