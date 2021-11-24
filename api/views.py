@@ -1,4 +1,6 @@
 
+from os import stat
+
 from django.conf import settings
 from django.core.signing import BadSignature, Signer
 from django.shortcuts import get_object_or_404
@@ -23,7 +25,7 @@ class MeView(generics.RetrieveAPIView):
 class CandidateViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "number"
     permission_classes = (permissions.IsAuthenticated, )
-    queryset = Candidate.objects
+    queryset = Candidate.objects.filter(active=True)
 
     def get_serializer_class(self):
         if self.action == "list":
@@ -37,10 +39,10 @@ class VoteView(views.APIView):
     def post(self, request: Request, format=None):
         if not settings.ENABLE_VOTE:
             return Response({"error": "voting is currently disabled"}, status=status.HTTP_400_BAD_REQUEST)
-        if hasattr(self.request.user, "vote"):
+        if request.user.votes.filter(session=settings.VOTE_SESSION).exists():
             return Response({"error": "Already voted"}, status=status.HTTP_400_BAD_REQUEST)
         to_vote = get_object_or_404(Candidate, number=request.data.get("number"))
-        vote = Vote.objects.create(candidate=to_vote, user=request.user)
+        vote = Vote.objects.create(candidate=to_vote, user=request.user, session=settings.VOTE_SESSION)
         return Response({"status": "success", "vote": VoteSerializer(vote, context={'request': request}).data})
 
 class SetPasswordView(views.APIView):
@@ -65,3 +67,9 @@ class CheckPasswordCodeView(views.APIView):
             return Response({"valid": True})
         except (BadSignature, ChangePasswordKey.DoesNotExist):
             return Response({"error": "Invalid URL."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class VotingStatusView(views.APIView):
+    permission_classes = (permissions.IsAuthenticated, )
+    def get(self, request: Request, format=None):
+        return Response({"status": settings.VOTING_STATUS}, status=status.HTTP_200_OK)

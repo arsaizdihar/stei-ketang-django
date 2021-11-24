@@ -176,3 +176,5 @@ SIMPLE_JWT = {
 }
 
 ENABLE_VOTE = os.environ.get("ENABLE_VOTE", "True").lower() in ("true", "t", "1")
+VOTING_STATUS = os.environ.get("VOTING_STATUS", "wait") # wait, voting, done
+VOTE_SESSION = int(os.environ.get("VOTE_SESSION", 1))

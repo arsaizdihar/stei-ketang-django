@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.core.signing import BadSignature, Signer
 from rest_framework import serializers
+from rest_framework.fields import SerializerMethodField
 from users.models import ChangePasswordKey
 
 from .models import Candidate, Detail, User, Vote
@@ -18,19 +20,20 @@ class VoteSerializer(serializers.ModelSerializer):
         return request.build_absolute_uri(obj.candidate.photo.url)
     class Meta:
         model = Vote
-        fields = ("id", "number", "name", "time", "photo")
+        fields = ("id", "number", "name", "time", "photo", "session")
 
 class UserSerializer(serializers.ModelSerializer):
-    vote = VoteSerializer()
+    vote = SerializerMethodField()
 
     class Meta:
         model = User
         fields = ("id", "email", "full_name", "vote")
 
     def get_vote(self, obj):
-        if obj.vote is None:
+        vote = obj.votes.filter(session=settings.VOTE_SESSION).first()
+        if vote is None:
             return None
-        return {"number": obj.vote.candidate.number, "name": obj.vote.candidate.name, "time": obj.vote.created_at}
+        return VoteSerializer(vote, context=self.context).data
 
 class CandidateListSerializer(serializers.ModelSerializer):
 

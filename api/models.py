@@ -6,6 +6,7 @@ class Candidate(models.Model):
     number = models.PositiveSmallIntegerField(unique=True)
     name = models.CharField(max_length=250)
     photo = models.ImageField(upload_to="candidates", null=True)
+    active = models.BooleanField(default=True)
     bio = models.TextField()
     instagram = models.CharField(max_length=200, null=True, blank=True)
     linkedin = models.CharField(max_length=200, null=True, blank=True)
@@ -32,12 +33,16 @@ class Candidate(models.Model):
 
 
 class Vote(models.Model):
-    user = models.OneToOneField(User, unique=True, related_query_name="vote", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="votes", on_delete=models.CASCADE)
+    session = models.PositiveSmallIntegerField(choices=((1, 1), (2, 2)), default=1)
     candidate = models.ForeignKey(Candidate, related_name="votes", on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"{self.user.email} - {self.candidate.number}"
+    
+    class Meta:
+        unique_together = ['user', 'session']
 
 class DetailTypes(models.IntegerChoices):
         VISI = 1

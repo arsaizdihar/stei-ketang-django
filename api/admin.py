@@ -16,8 +16,8 @@ def name(obj):
     return obj.candidate.name
 
 class VoteAdmin(admin.ModelAdmin):
-    list_display = (email, number, name)
-    list_filter = ("candidate__name", )
+    list_display = (email, number, name, "session")
+    list_filter = ("candidate__name", "session")
     
 admin.site.register(Vote, VoteAdmin)
 admin.site.register((Candidate, Detail))
