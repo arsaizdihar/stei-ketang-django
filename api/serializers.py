@@ -76,7 +76,7 @@ class SetPasswordSerializer(serializers.Serializer):
         signer = Signer()
         try:
             data = signer.unsign_object(code or "")
-            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data.get("id"))
+            key: ChangePasswordKey = ChangePasswordKey.objects.get(user__email=data.get("email"))
             if key.used:
                 errs["code"] = "Password already set."
             elif not errs:
