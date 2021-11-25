@@ -61,7 +61,7 @@ class CheckPasswordCodeView(views.APIView):
         try:
             code = request.data.get("code")
             data = signer.unsign_object(code or "")
-            key: ChangePasswordKey = ChangePasswordKey.objects.get(id=data.get("id"))
+            key: ChangePasswordKey = ChangePasswordKey.objects.get(user__email=data.get("email"))
             if key.used:
                 return Response({"error": "Password already set."}, status=status.HTTP_400_BAD_REQUEST)
             return Response({"valid": True})
