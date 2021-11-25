@@ -44,7 +44,7 @@ class CandidateListSerializer(serializers.ModelSerializer):
 class DetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Detail
-        fields = ("number", "text")
+        fields = ("number", "text", "desc")
 
 class CandidateSerializer(serializers.ModelSerializer):
     detail = serializers.SerializerMethodField()

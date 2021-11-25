@@ -54,6 +54,7 @@ class Detail(models.Model):
     number = models.PositiveSmallIntegerField()
     text = models.TextField()
     type = models.PositiveSmallIntegerField(choices=DetailTypes.choices, default=DetailTypes.VISI)
+    desc = models.TextField(null=True, blank=True)
 
     @property
     def type_str(self) -> str:
