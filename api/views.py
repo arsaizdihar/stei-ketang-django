@@ -75,7 +75,7 @@ class VotingStatusView(views.APIView):
         return Response({"status": settings.VOTING_STATUS}, status=status.HTTP_200_OK)
 
 class VoteCountView(views.APIView):
-    permissions = (permissions.IsAdminUser, )
+    permission_classes = (permissions.IsAdminUser, )
     def get(self, request: Request, format=None):
         candidates = Candidate.objects.filter(active=True).all()
         res = {}
