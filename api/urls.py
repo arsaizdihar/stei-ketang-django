@@ -16,4 +16,5 @@ urlpatterns = [
     path("vote/", VoteView.as_view(), name="vote"),
     path("password/set/", SetPasswordView.as_view(), name="set-password"),
     path("password/check/", CheckPasswordCodeView.as_view(), name="check-password"),
+    path("vote/count/", VoteCountView.as_view(), name="vote-count")
 ] + router.urls
