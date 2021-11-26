@@ -83,5 +83,5 @@ class VoteCountView(views.APIView):
         res["total"] = total
         for candidate in candidates:
             votes = candidate.votes.filter(session=settings.VOTE_SESSION).count()
-            res[candidate.number] = {"nama": candidate.name, "votes": votes, "percentage": votes/total*100}
+            res[candidate.number] = {"nama": candidate.name, "votes": votes, "percentage": votes/total*100 if total else 0}
         return Response(res)
