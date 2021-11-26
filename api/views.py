@@ -79,6 +79,9 @@ class VoteCountView(views.APIView):
     def get(self, request: Request, format=None):
         candidates = Candidate.objects.filter(active=True).all()
         res = {}
+        total = Vote.objects.filter(session=settings.VOTE_SESSION).count()
+        res["total"] = total
         for candidate in candidates:
-            res[candidate.number] = {"nama": candidate.name, "votes": candidate.votes.filter(session=settings.VOTE_SESSION).count()}
+            votes = candidate.votes.filter(session=settings.VOTE_SESSION).count()
+            res[candidate.number] = {"nama": candidate.name, "votes": votes, "percentage": votes/total*100}
         return Response(res)
